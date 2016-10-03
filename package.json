@@ -1,0 +1,91 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "connect-api-mocker-adv-v3@0.3.1",
+        "scope": null,
+        "escapedName": "connect-api-mocker-adv-v3",
+        "name": "connect-api-mocker-adv-v3",
+        "rawSpec": "0.2.1",
+        "spec": "0.2.1",
+        "type": "version"
+      }
+    ]
+  ],
+  "_from": "connect-api-mocker-adv-v3@0.3.1",
+  "_id": "connect-api-mocker-adv-v32@0.3.1",
+  "_inCache": true,
+  "_location": "/connect-api-mocker-adv-v3",
+  "_nodeVersion": "5.5.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/connect-api-mocker-adv-v3-0.3.1.tgz_1459941439198_0.04312752839177847"
+  },
+  "_npmUser": {
+    "name": "eminsevinc85@hotmail.com",
+    "email": "eminsevinc85@hotmail.com"
+  },
+  "_npmVersion": "3.3.12",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "connect-api-mocker-adv-v3@0.3.1",
+    "scope": null,
+    "escapedName": "connect-api-mocker-adv-v3",
+    "name": "connect-api-mocker-adv-v3",
+    "rawSpec": "0.2.1",
+    "spec": "0.2.1",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/connect-api-mocker-adv-v3/-/connect-api-mocker-adv-v3-0.3.1.tgz",
+  "_shasum": "575035787a6176c0a5c11cadc78f4cd265182edf",
+  "_shrinkwrap": null,
+  "_spec": "connect-api-mocker-adv-v3@0.3.1",
+  "author": {
+    "name": "Peter Kicenko, sahibinden.com"
+  },
+  "dependencies": {
+    "js-yaml": "^3.2.6",
+    "lodash": "^3.2.0"
+  },
+  "description": "Middleware to mock connect request",
+  "devDependencies": {
+    "chai": "^2.0.0",
+    "chai-connect-middleware": "^0.3.1",
+    "coffee-script": "^1.9.0",
+    "mocha": "^2.1.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dist": {
+    "shasum": "575035787a6176c0a5c11cadc78f4cd265182edf",
+    "tarball": "https://registry.npmjs.org/connect-api-mocker-adv-v3/-/connect-api-mocker-adv-v3-0.3.1.tgz"
+  },
+  "gitHead": "448dcb472f52f24add6d77caf1b936c334a49da3",
+  "keywords": [
+    "middleware",
+    "connect",
+    "mock",
+    "proxy",
+    "api",
+    "rest"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "eminsevinc85@hotmail.com",
+      "email": "eminsevinc85@hotmail.com"
+    }
+  ],
+  "name": "connect-api-mocker-adv-v3",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register test/test*.coffee"
+  },
+  "version": "0.2.1"
+}

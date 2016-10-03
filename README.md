@@ -1,236 +1,167 @@
-connect-api-mocker
-==================
-`connect-api-mocker` is a [connect.js](https://github.com/senchalabs/connect) middleware that fakes REST API server with filesystem. It will be helpful when you try to test your application without the actual REST API server.
+## Advanced API mocker
 
-## Usage
+This is a connect.js middleware to mock http request with manual body, headers and status code. Used to mock REST API.
 
-You can use it with [Grunt](http://gruntjs.com). After you install [grunt-contrib-connect](https://github.com/gruntjs/grunt-contrib-connect) add api-mocker middleware to your grunt config. The `mocks/api` folder will be served as REST API at `/api`.
+### Usage
 
-```js
+Add this this middleware to your config. Example of configuring `gulp-connect` with API root '/api' and 
+mock location in directory `mocks'
+```javascript
+gulpConnect.connect.server({
+middleware: function (connect, opt) {
+  var mocker = require('connect-api-mocker-adv'),
+    options = {
+      urlRoot: '/api',
+      pathRoot: 'mocks'
+    };
 
-module.exports = function(grunt) {
-  var apiMocker = require('./lib/middlewares/api-mocker');
-
-  grunt.loadNpmTasks('grunt-contrib-connect');  // Connect - Development server
-
-  // Project configuration.
-  grunt.initConfig({
-
-    // Development server
-    connect: {
-      server: {
-        options: {
-          base: './build',
-          port: 9001,
-          middleware: function(connect, options) {
-
-            var middlewares = [];
-
-            // mock/rest directory will be mapped to your fake REST API
-            middlewares.push(apiMocker(
-                '/api',
-                'mocks/api'
-            ));
-
-            // Static files
-            middlewares.push(connect.static(options.base));
-            middlewares.push(connect.static(__dirname));
-
-            return middlewares;
-          }
-        }
-      }
-    }
-  });
+  return [mocker(options)];
 }
+});
 ```
 
-After you can run your server with `grunt connect` command. You will see `/api` will be mapped to `mocks/api`.
+If don't want use gulp, you can use without 
+```javascript
+var connect = require('connect');
+var http = require('http');
+var mocker = require('connect-api-mocker-adv')
+ 
+var app = connect();
 
-## Directory Structure
+ var   options = {
+      urlRoot: '/api',
+      pathRoot: 'mocks',
+      ignoreQuery: false
+    };
+    
+app.use(mocker(options));
 
-You need to use service names as directory name and http method as filename. Files must be JSON. Middleware will match url to directory structure and respond with the corresponding http method file.
-
-Example REST service: `GET /api/messages`
-
-Directory Structure:
-
-```
-_ api
-  \_ messages
-     \_ GET.json
-```
-
-Example REST service: `GET /api/messages/1`
-
-Directory Structure:
-
-```
-_ api
-  \_ messages
-     \_ 1
-        \_ GET.json
+http.createServer(app).listen(3000);
 ```
 
-Example REST service: `POST /api/messages/1`
+Firstly mocks will be served, than other middleware.
+          
+## Structure
 
-Directory Structure:
+Mock file will be searched from `pathRoot` according to request url and request method. 
+For example if `pathRoot` is 'mocks', `method` is 'GET' and `url` is '/api/collection mock files will be searched under 
+'./mocks/api/collection/GET.yaml'. Filename int the upper case.
 
+
+## Disable subtree
+
+Adding file `disabled` without content or with `true` will disable all subtree from current path 
+ 
+### Mock file structure
+
+Mock file is a yaml config file with next keys:
+
++ `status` (number) - Response status code, default is 200
++ `headers` (object) - Headers which will be appended to default headers
++ `disabled` (boolean) - Is this mock disabled
++ `body` (object|string) - Response body. Can be an object, that will be serialized to json or simple text (use `|` or `>` for multiline
+    text)
+   
+   
+Example 
+```yaml
+status: 200
+disabled: false
+headers:
+  X-Header: header-value
+body:
+  prop: val
+``` 
+Or only text body
+
+```yaml
+body: |
+  This is text body line breaks.
+  Use > to disable line breaks
 ```
-_ api
-  \_ messages
-     \_ 1
-        \_ POST.json
-```
-
-
-Example REST service: `DELETE /api/messages/1`
-
-Directory Structure:
-
-```
-_ api
-  \_ messages
-     \_ 1
-        \_ DELETE.json
-```
-
-## Bandwidth simulation
-
-3rd parameter of api-mocker is for bandwidth limit. Metric is kilobit/sec and default value is 0(unlimited). You can use this to test your application in low bandwidth.
-
-Example grunt configuration:
-
-```js
-...
-          middleware: function(connect, options) {
-
-            var middlewares = [];
-
-            // mock/rest directory will be mapped to your fake REST API
-            middlewares.push(apiMocker(
-                '/api',
-                'mocks/api',
-                50          // limit bandwidth to 50 kilobit/second
-            ));
-...
-```
-
-connect-api-mocker(Turkish)
-==================
-
-`connect-api-mocker`, REST API'lerle haberleşen web uygulamaları yaparken, uygulamayı REST API'nın sınırlılıklarından bağımsız olarak test edebilmek için, dosya sistemiyle sahte bir REST API sunmaya yarayan bir [connect.js](https://github.com/senchalabs/connect) middleware'ıdır.
-
-## Kullanım
-
-Bu middleware [Grunt](http://gruntjs.com) ile kolayca kullanılabilir. [grunt-contrib-connect](https://github.com/gruntjs/grunt-contrib-connect) eklentisi kurulduktan sonra, konfigürasyona api-mocker middleware'i aşağıdaki gibi eklendiğinde, projenin `mocks/api` klasörü, `/api` adresinden REST servisi gibi sunulmaya başlanacaktır:
-
-```js
-
-module.exports = function(grunt) {
-  var apiMocker = require('./lib/middlewares/api-mocker');
-
-  grunt.loadNpmTasks('grunt-contrib-connect');  // Connect - Gelistirme sunucusu
-
-  // Project configuration.
-  grunt.initConfig({
-
-    // Gelistirme sunucusu
-    connect: {
-      server: {
-        options: {
-          base: './build',
-          port: 9001,
-          middleware: function(connect, options) {
-
-            var middlewares = [];
-
-            // mock/rest klasorunu sahte servis katmani olarak kullan
-            middlewares.push(apiMocker(
-                '/api',
-                'mocks/api'
-            ));
-
-            // Statik dosyalar
-            middlewares.push(connect.static(options.base));
-            middlewares.push(connect.static(__dirname));
-
-            return middlewares;
-          }
-        }
-      }
+Or with json
+```yaml
+body: |
+  {
+    "key": "value",
+    "subKey": {
+      "subObjectKey":"subObjectValue"
     }
-  });
-}
+  }
 ```
+## API
 
-Daha sonra `grunt connect` komutuyla statik sunucu çalıştırıldığında `/api` adresi ile `mocks/api` klasörünün REST API olarak sunulduğu görülecektir.
+### mocker(options)
 
-## Klasör yapısı
+### options.urlRoot
 
-REST servis URL'i ile aynı yapıda klasör yapısı oluşturularak, oluşturulan klasöre HTTP talep tipi ile aynı adda JSON dosyaları eklenerek bu adrese, bu tiplerde yapılan taleplere belirtilen JSON kaynaklarının gönderilmesi sağlanabilir.
+Required
 
-Örnek REST servisi: `GET /api/messages`
+Type: `String` 
 
-Dosya sistemi yapısı:
+URL root for api. If `url` equals to `*` then it will try to mock all requests
 
-```
-_ api
-  \_ messages
-     \_ GET.json
-```
+### options.pathRoot
 
-Örnek REST servisi: `GET /api/messages/1`
+Required
 
-Dosya sistemi yapısı:
+Type: `String`
 
-```
-_ api
-  \_ messages
-     \_ 1
-        \_ GET.json
-```
+Root location of mock files
 
-Örnek REST servisi: `POST /api/messages/1`
+### options.headers
 
-Dosya sistemi yapısı:
+Type: `Object`
 
-```
-_ api
-  \_ messages
-     \_ 1
-        \_ POST.json
-```
+Default: `{'Content-Type': 'application/json; charset=utf-8'}`
+
+Response headers for all requests
+
+### options.forced
+
+Type: `Boolean`
+
+Default: false
+
+If true all disabled mocks will be served
+
+### options.mockAll
+
+Type: `Boolean`
+
+Default: false
+
+All request will be mocked. If mock not found or disabled response with status 500 will be returned
+
+### options.urlMangler
+
+Type: `Function`
+
+Modify request url. Arguments: 
+- `url` - request url without query string
+- `request` - request object
+
+### options.speedLimit
+
+Type: `Number`
+
+Default: 0 (unlimited) 
+
+Limit speed of response in KB
+
+### options.ignoreQuery
+
+Type: `Boolean`
+
+Default: true 
+
+If true querystring is ignored.
+ - If false - each mock folder will be checked for custom query string.
+ - Format of subfolders with query: #[parameterName[=parameterValue]]
 
 
-Örnek REST servisi: `DELETE /api/messages/1`
 
-Dosya sistemi yapısı:
 
-```
-_ api
-  \_ messages
-     \_ 1
-        \_ DELETE.json
-```
+ 
 
-## Hız limiti simülasyonu
-
-api-mocker'ın 3. parametresi hız limitidir. Bu değer kilobit/saniye cinsindendir ve varsayılan olarak 0 yani limitsizdir. Düşük internet hızlarında uygulamanızın tepkisini ölçmek için bu özellik kullanılabilir.
-
-Örnek grunt konfigürasyonu:
-
-```js
-...
-          middleware: function(connect, options) {
-
-            var middlewares = [];
-
-            // mock/rest klasorunu sahte servis katmani olarak kullan
-            middlewares.push(apiMocker(
-                '/api',
-                'mocks/api',
-                50          // 50 kilobit/saniye hızda gönder
-            ));
-...
-```
+ 
